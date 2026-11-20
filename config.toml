@@ -1,0 +1,12 @@
+change_wallpaper = true
+change_terminal = true
+change_terminal_background_color = true
+change_terminal_background_transparency = 100
+change_terminal_foreground_color = true
+categories = ["ALL"]
+
+all_categories = true
+all_names = true
+all_types = true
+all_second_types = true
+all_generations = true
