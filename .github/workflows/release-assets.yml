@@ -1,0 +1,38 @@
+name: Release assets
+
+on:
+  push:
+    tags:
+      - "**"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check tag is on main
+        id: main-check
+        run: |
+          git fetch origin main
+          if git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD; then
+            echo "on_main=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "on_main=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create ZIP archive
+        if: steps.main-check.outputs.on_main == 'true'
+        run: zip -r -X "nostalgia-asstes-${GITHUB_REF_NAME}.zip" pokemon pride
+
+      - name: Create GitHub Release
+        if: steps.main-check.outputs.on_main == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "nostalgia-asstes-${GITHUB_REF_NAME}.zip" --generate-notes
